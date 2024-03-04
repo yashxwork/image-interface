@@ -41,10 +41,9 @@ const getChatResponse = async (incomingChatDiv) => {
 
   // Send POST request to API, get response and set the reponse as paragraph element text
   try {
-    const response = (
-      await fetch("/.netlify/functions/openai", requestOptions)
-    ).json();
-    pElement.textContent = response.choices[0].message.content.trim();
+    const response = await fetch("/.netlify/functions/openai", requestOptions);
+    const data = await response.json();
+    pElement.textContent = data.choices[0].message.content.trim();
   } catch (error) {
     // Add error class to the paragraph element and set error text
     pElement.classList.add("error");
