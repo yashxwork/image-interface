@@ -1,6 +1,5 @@
-const fetch = require("node-fetch");
-
 exports.handler = async (event) => {
+  const fetch = (await import("node-fetch")).default;
   const payload = JSON.parse(event.body);
 
   const response = await fetch("https://api.openai.com/v1/chat/completions", {
