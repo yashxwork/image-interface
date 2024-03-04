@@ -25,12 +25,25 @@ const createChatElement = (content, className) => {
 };
 
 const getChatResponse = async (incomingChatDiv) => {
-  const API_URL = "https://api.openai.com/v1/chat/completions";
   const pElement = document.createElement("p");
+
+  // Define the properties and data for the API request
+  const requestOptions = {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      model: "gpt-3.5-turbo",
+      messages: [{ role: "user", content: userText }],
+    }),
+  };
 
   // Send POST request to API, get response and set the reponse as paragraph element text
   try {
-    const response = await (await fetch(API_URL, requestOptions)).json();
+    const response = (
+      await fetch("/.netlify/functions/openai", requestOptions)
+    ).json();
     pElement.textContent = response.choices[0].message.content.trim();
   } catch (error) {
     // Add error class to the paragraph element and set error text
