@@ -6,15 +6,13 @@ const deleteButton = document.querySelector("#delete-btn");
 let userText = null;
 
 const loadDataFromLocalstorage = () => {
-  // Load saved chats from local storage and apply/add on the page
-
   const defaultText = `<div class="default-text">
                             <h1>Image Prototype</h1>
                             <p>Start a conversation and explore the power of AI.</p>
                         </div>`;
 
   chatContainer.innerHTML = localStorage.getItem("all-chats") || defaultText;
-  chatContainer.scrollTo(0, chatContainer.scrollHeight); // Scroll to bottom of the chat container
+  chatContainer.scrollTo(0, chatContainer.scrollHeight);
 };
 
 const createChatElement = (content, className) => {
@@ -27,7 +25,6 @@ const createChatElement = (content, className) => {
 const getChatResponse = async (incomingChatDiv) => {
   const pElement = document.createElement("p");
 
-  // Define the properties and data for the API request
   const requestOptions = {
     method: "POST",
     headers: {
@@ -39,19 +36,16 @@ const getChatResponse = async (incomingChatDiv) => {
     }),
   };
 
-  // Send POST request to API, get response and set the reponse as paragraph element text
   try {
     const response = await fetch("/.netlify/functions/openai", requestOptions);
     const data = await response.json();
     pElement.textContent = data.choices[0].message.content.trim();
   } catch (error) {
-    // Add error class to the paragraph element and set error text
     pElement.classList.add("error");
     pElement.textContent =
       "Oops! Something went wrong while retrieving the response. Please try again.";
   }
 
-  // Remove the typing animation, append the paragraph element and save the chats to local storage
   incomingChatDiv.querySelector(".typing-animation").remove();
   incomingChatDiv.querySelector(".chat-details").appendChild(pElement);
   localStorage.setItem("all-chats", chatContainer.innerHTML);
@@ -59,7 +53,6 @@ const getChatResponse = async (incomingChatDiv) => {
 };
 
 const copyResponse = (copyBtn) => {
-  // Copy the text content of the response to the clipboard
   const reponseTextElement = copyBtn.parentElement.querySelector("p");
   navigator.clipboard.writeText(reponseTextElement.textContent);
   copyBtn.textContent = "done";
@@ -84,7 +77,6 @@ const showAnimalImage = (animalName) => {
 };
 
 const showTypingAnimation = () => {
-  // Display the typing animation and call the getChatResponse function
   const html = `<div class="chat-content">
                     <div class="chat-details">
                         <img src="images/chatbot.jpg" alt="chatbot-img" class="profile-img">
@@ -96,7 +88,6 @@ const showTypingAnimation = () => {
                     </div>
                     <span onclick="copyResponse(this)" class="material-symbols-rounded">content_copy</span>
                 </div>`;
-  // Create an incoming chat div with typing animation and append it to chat container
   const incomingChatDiv = createChatElement(html, "incoming");
   chatContainer.appendChild(incomingChatDiv);
   chatContainer.scrollTo(0, chatContainer.scrollHeight);
@@ -130,7 +121,7 @@ const handleOutgoingChat = () => {
     showAnimalImage(animalFound);
     setTimeout(() => {
       showTypingAnimation();
-      getChatResponse(outgoingChatDiv); // We still call getChatResponse to handle the response after showing the image
+      getChatResponse(outgoingChatDiv);
     }, 500);
   } else {
     setTimeout(showTypingAnimation, 500);
@@ -138,7 +129,6 @@ const handleOutgoingChat = () => {
 };
 
 deleteButton.addEventListener("click", () => {
-  // Remove the chats from local storage and call loadDataFromLocalstorage function
   if (confirm("Are you sure you want to delete all the chats?")) {
     localStorage.removeItem("all-chats");
     loadDataFromLocalstorage();
@@ -148,14 +138,11 @@ deleteButton.addEventListener("click", () => {
 const initialInputHeight = chatInput.scrollHeight;
 
 chatInput.addEventListener("input", () => {
-  // Adjust the height of the input field dynamically based on its content
   chatInput.style.height = `${initialInputHeight}px`;
   chatInput.style.height = `${chatInput.scrollHeight}px`;
 });
 
 chatInput.addEventListener("keydown", (e) => {
-  // If the Enter key is pressed without Shift and the window width is larger
-  // than 800 pixels, handle the outgoing chat
   if (e.key === "Enter" && !e.shiftKey && window.innerWidth > 800) {
     e.preventDefault();
     handleOutgoingChat();
